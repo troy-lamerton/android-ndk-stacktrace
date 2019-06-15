@@ -1,0 +1,27 @@
+00000071af6e5dcc pstate
+
+000000000000069c [vdso]
+
+ShapeModulePropertyBindings::SetFloatValue(ParticleSystem&, int, float)
+
+0000000000008150 /system/lib64/liblog.so
+
+Mesh_CUSTOM_CombineMeshesImpl(ScriptingReferenceWrapper<Il2CppObject*>, ScriptingReferenceWrapper<Il2CppArray*>, unsigned char, unsigned char, unsigned char)
+
+MixedSeriesChart_ChartAndGraph_IMixedChartDelegate_ReactivateChart_mE2A4518DE2443656999938EAB64918B4E5AD6627
+C:\Users\g4g\Documents\builds\onvGuWUM\0\root\idlegame\IdleGame\Temp\StagingArea\Il2Cpp\il2cppOutput/Plugins2.cpp:29500
+RenderTexture_CUSTOM_ReleaseTemporary(ScriptingReferenceWrapper<Il2CppObject*>)
+
+InternalEnumerator_1_MoveNext_m1F2CA209EFB765FE1D7C2F3DCEA7253512F8D803_gshared
+C:\Users\g4g\Documents\builds\onvGuWUM\0\root\idlegame\IdleGame\Temp\StagingArea\Il2Cpp\il2cppOutput/Generics21.cpp:31581
+NullCheck(void*, Il2CppSequencePoint*)
+C:\Program Files\Unity\Hub\Editor\2019.1.2f1\Editor\Data\il2cpp\libil2cpp\codegen/il2cpp-codegen-il2cpp.h:226
+vk::TaskExecutor::HandleCommandStream(GrowableBuffer*, VkCommandBuffer_T*)
+
+000000000000fb80 /system/lib64/libutils.so
+
+WritePixel(unsigned char*, ColorRGBAf const&, TextureFormat)
+
+void UpdateSingleRow2Tpl<(UVModule::TimeMode)0, (ParticleSystemCurveEvalMode)3, (ParticleSystemCurveEvalMode)1>(float, MinMaxCurve const&, MinMaxCurve const&, float __vector(2) const&, ParticleSystemParticles const&, float*, UVModule::RowMode, int, int, int, int)
+
+00000071af6e5dcc pstate

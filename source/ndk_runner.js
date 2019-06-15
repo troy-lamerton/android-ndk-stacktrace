@@ -5,83 +5,57 @@ const prompts = require('prompts')
 
 const l = require('./l')
 
-const ndk = 'C:/bin/android-ndk-r20/toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe';
-
-(async () => {
-
-const defaultSymbols = require('../config/default')
 const customSymbols = require('../config/custom')
 
-l.info('~~ Better Native Crash Logs ~~')
-
-const check1 = await prompts({
-    type: 'confirm',
-    name: 'value',
-    message: 'Have you downloaded artifacts zip (from gitlab) for the crashing commit?',
-    initial: true
-})
-
-if (!check1.value) {
-    l.warn('Please find the gitlab pipeline for the crashing commit and download the artifacts.')
-    l.info('Unzip the artifacts.zip and then unzip *symbols.zip')
-    l.info('You will end up with libil2cpp.sym')
-    return;
+const ndks = {
+    ARM64: 'bin/aarch64-linux-android-addr2line.exe'
 }
 
-const gameSymbols = await prompts({
-    type: 'text',
-    name: 'path',
-    message: 'Drag libil2cpp.sym file onto this window',
-    validate: input => (input.includes('.sym') || input.includes('.so.debug')) && fs.existsSync(input)
-});
+function getNdk(arch) {
+    return ndks[arch];
+}
 
-const symbols = [...defaultSymbols, ...customSymbols, gameSymbols.path];
-l.debug('Using symbols: ' + symbols)
 
-const crashLog = await prompts({
-    type: 'text',
-    name: 'path',
-    message: 'Drag a native crash log.txt onto this window',
-    validate: input => fs.existsSync(input)
-});
+module.exports = async (logs, symbolsPath, arch = 'ARM64') => {
+    const ndk = getNdk(arch);
+    const defaultSymbols = require(`../config/${arch}`)
 
-const input = fs.readFileSync(crashLog.path, 'utf8').toString()
+    l.info('~~ Better NDK Symbols ~~')
+    l.info('You will end up with libil2cpp.sym')
 
-if (input.length < 5) throw new Error('The logs file you chose didnt even contain logs!')
+    const symbols = [...defaultSymbols, symbolsPath];
+    l.debug('Using symbols: ' + symbolsPath)
 
-l.debug(input)
+    if (logs.length < 5) throw new Error('The logs data doesnt even contain logs!');
 
-const parser = require('./parser')
-let trace = parser(input)
+    l.debug(logs)
 
-symbols.forEach(symbolsFile => {
-    l.info(`Checking for symbols in ${path.basename(symbolsFile)}`)
+    const parser = require('./parser')
+    let trace = parser(logs)
 
-    trace = trace.map(traceObj => {
-        const {number, original} = traceObj;
+    symbols.forEach(symbolsFile => {
+        l.info(`Checking for symbols in ${path.basename(symbolsFile)}`)
 
-        const runner = sh.exec(`${ndk} -f -C -e "${symbolsFile}" ${number}`, {async: false, silent: true})
-        const niceOutput = runner.stdout.trim()
+        trace = trace.map(traceObj => {
+            const { number } = traceObj;
 
-        // did not find the symbol
-        if (niceOutput.startsWith('?')) return traceObj;
+            const runner = sh.exec(`${ndk} -f -C -e "${symbolsFile}" ${number}`, {async: false, silent: true})
+            const niceOutput = runner.stdout.trim()
 
-        // remove the unknown line number indicator
-        return niceOutput.replace('\n??:?', '\n');
+            // did not find the symbol
+            if (niceOutput.startsWith('?')) return traceObj;
 
+            // remove the unknown line number indicator
+            return niceOutput.replace('\n??:?', '\n');
+
+        })
     })
-})
 
-trace = trace.map(traceObj => {
-    if (typeof(traceObj) === 'object') {
-        return traceObj.original;
-    }
-    return traceObj;
-})
+    trace = trace.map(traceObj => traceObj.original || traceObj)
 
-const output = trace.join('\n')
-console.log(output)
+    const output = trace.join('\n')
+    console.log(output)
 
-fs.writeFileSync(path.join(path.dirname(crashLog.path), `better_${path.basename(crashLog.path)}`), output)
+    fs.writeFileSync(path.join(path.dirname(crashLog.path), `better_${path.basename(crashLog.path)}`), output)
 
-})();
+}
