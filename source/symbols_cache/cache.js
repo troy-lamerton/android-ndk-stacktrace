@@ -7,10 +7,12 @@ const unzipper = require('unzipper')
 const l = require('../l')
 
 
-const cacheFolder = 'symbols'
+const cacheFolder = 'cache/symbols'
 
-function has(key) {
-    const filepath = path.join(cacheFolder, key)
+const getFilepath = (commit, arch) => path.join(cacheFolder, commit, arch)
+
+function has(commit, arch) {
+    const filepath = getFilepath(commit, arch)
     return fs.existsSync(filepath)
 }
 
@@ -20,12 +22,11 @@ function has(key) {
  * @returns path to the cached file
  */
 function get(commit, arch) {
-    return path.join(cacheFolder, commit, arch);
+    return getFilepath(commit, arch);
 }
 
 async function downloadSymbols(commit, arch) {
-    const key = `${commit}/${arch}`
-    const filepath = path.join(cacheFolder, key)
+    const filepath = getFilepath(commit, arch)
 
     const DEMO = 'https://codeload.github.com/ezefranca/EFInternetIndicator/zip/master'
     const url = `https://gitlab.botogames.com/root/idlegame/${commit}/${arch}`

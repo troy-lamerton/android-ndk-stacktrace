@@ -1,5 +1,5 @@
 module.exports = require('pino')({
-    level: 'info',
+    level: 'debug',
     prettyPrint: {
         levelFirst: true,
         ignore: 'time,pid,hostname'

@@ -63,10 +63,6 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-.env.test
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
@@ -175,3 +171,6 @@ fabric.properties
 IdleGame/
 *.zip
 cache/symbols/
+output/
+_output/
+_input/

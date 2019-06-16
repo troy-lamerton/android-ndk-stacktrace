@@ -1,61 +1,77 @@
 const sh = require('shelljs')
 const fs = require('fs')
 const path = require('path')
-const prompts = require('prompts')
+const _ = require('lodash')
 
 const l = require('./l')
-
-const customSymbols = require('../config/custom')
-
 const ndks = {
-    ARM64: 'bin/aarch64-linux-android-addr2line.exe'
+    // ARM64: path.join(__dirname, 'bin/aarch64-linux-android-addr2line.exe')
+    'ARM64': path.join(process.env.NDK_PATH, `toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe`),
 }
 
 function getNdk(arch) {
     return ndks[arch];
 }
 
-
-module.exports = async (logs, symbolsPath, arch = 'ARM64') => {
+module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
     const ndk = getNdk(arch);
     const defaultSymbols = require(`../config/${arch}`)
 
-    l.info('~~ Better NDK Symbols ~~')
-    l.info('You will end up with libil2cpp.sym')
-
-    const symbols = [...defaultSymbols, symbolsPath];
-    l.debug('Using symbols: ' + symbolsPath)
+    const specialSymbolsPath = path.join(specialSymbolsFolder, 'libil2cpp.sym')
+    const symbols = [...defaultSymbols, specialSymbolsPath];
+    l.debug('Using game symbols: ' + specialSymbolsPath)
 
     if (logs.length < 5) throw new Error('The logs data doesnt even contain logs!');
 
-    l.debug(logs)
-
+    
     const parser = require('./parser')
-    let trace = parser(logs)
+    const traces = parser(logs)
+    
+    const originalStrings = traces.map(obj => obj.original)
 
-    symbols.forEach(symbolsFile => {
-        l.info(`Checking for symbols in ${path.basename(symbolsFile)}`)
-
-        trace = trace.map(traceObj => {
+    const linesPromised = traces.map(traceObj => {
+        
+        const promises = symbols.map(symbolsFile => {
+            l.trace(`Checking for symbols in ${path.basename(symbolsFile)}`)
             const { number } = traceObj;
 
-            const runner = sh.exec(`${ndk} -f -C -e "${symbolsFile}" ${number}`, {async: false, silent: true})
-            const niceOutput = runner.stdout.trim()
+            return executeAsync(`${ndk} -f -C -e "${symbolsFile}" ${number}`)
+                .then((niceOutput) => {
+                    if (!niceOutput) throw new Error('output is empty!')
+                    
+                    // did not find the symbol
+                    if (niceOutput.startsWith('??')) return null;
+                    
+                    // remove the unknown line number indicator
+                    return niceOutput.replace('\n??:?', '\n');
+                }).catch(err => {
+                    l.error(`[${ndk}] ${err}`)
+                    return null;
+                })
+        })
 
-            // did not find the symbol
-            if (niceOutput.startsWith('?')) return traceObj;
-
-            // remove the unknown line number indicator
-            return niceOutput.replace('\n??:?', '\n');
-
+        return Promise.all(promises).then(results => {
+            return results.find(result => _.isString(result)) || null;
         })
     })
 
-    trace = trace.map(traceObj => traceObj.original || traceObj)
+    
+    const finalOutputs = await Promise.all(linesPromised);
 
-    const output = trace.join('\n')
-    console.log(output)
+    const output = finalOutputs
+        .map((symbolicated, i) => _.isString(symbolicated) ? symbolicated : originalStrings[i])
+        .join('\n')
 
-    fs.writeFileSync(path.join(path.dirname(crashLog.path), `better_${path.basename(crashLog.path)}`), output)
+    return output;
+}
 
+function executeAsync(command) {
+    return new Promise((resolve, reject) => {
+        // l.info(command)
+        // resolve('??:?')
+        sh.exec(command, {silent: true}, (exitcode, stdout, stderr) => {
+            if (exitcode) reject(`exited with code ${exitcode}\n${stderr.trim()}`)
+            else resolve(stdout.trim())
+        })
+    })
 }

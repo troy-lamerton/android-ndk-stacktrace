@@ -14,16 +14,18 @@ module.exports = function(verboseLog) {
     const lines = verboseLog.split('\n')
     const startLine = lines.find(line => line.includes('CRASH') && line.includes('#00'))
     l.debug('starts at line ' + startLine)
+    const isNativeBacktrace = /\#\d{2}/
     const backtrace = lines
             .slice(startLine)
-            .filter(line => line.includes(' pc '))
+            .filter(line => line.includes(' pc ') && isNativeBacktrace.test(line))
             .map(line => line.slice(line.indexOf('pc ') + 2).trim())
             .map(line => line.split(/\s+/))
-            // logs are now [ ['00000123', '/system/libx/lib.so'], ... ]
+            // logs are now [ ['00000123', '/system/libx/lib.so', ...], ... ]
             .map(tuple => ({
                 number: parseInt(tuple[0].trim(), 16),
-                original: `${tuple[0]} ${tuple[1]}\n`
+                original: `${tuple[0]} ${tuple.slice(1).join(' ')}\n`
             }))
 
+    l.debug('there is number of lines in the log: ' + backtrace.length)
     return backtrace;
 }

@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const l = require('./l')
 const _ = require('lodash')
 const server = require('fastify')({logger: l})
@@ -5,8 +7,8 @@ const server = require('fastify')({logger: l})
 const symbols = require('./symbols_cache/cache')
 const ndkRunner = require('./ndk_runner')
 
-// todo: .post the plain text in the body
-server.get('/android/:commit', async function (req, reply) {
+
+server.post('/android/:commit', async function (req, reply) {
     const commit = _.get(req, 'params.commit')
     const arch = 'ARM64'
 
@@ -16,16 +18,20 @@ server.get('/android/:commit', async function (req, reply) {
 
     if (!symbols.has(commit, arch)) {
         l.info('symbols will be downloaded')
-        await symbols.downloadSymbols(commit, arch)
+        throw new Error('not implemented (download symbols)')
+        // await symbols.downloadSymbols(commit, arch)
         
     } else {
         l.info('using symbols in cache')
     }
 
-    l.debug('lets go ndk runner :D')
-    ndkRunner(arch)
+    const logs = req.body.toString()
+    const symbolsFolder = symbols.get(commit, arch);
 
-    reply.send('success')
+    const symolicatedLogs = await ndkRunner(logs, symbolsFolder, arch)
+
+    reply.type('text/plain')
+        .send(symolicatedLogs)
 });
 
 server.listen({port: process.env.PORT || 80})
