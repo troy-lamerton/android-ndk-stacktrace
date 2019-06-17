@@ -4,17 +4,14 @@ const fs = require('fs')
 
 const l = require('./source/l')
 
-const glob = require('glob-fs')({ gitignore: true });
-
-const commit = 'db2aab38'; //production on play store june 14th
-// const commit = '86642d51';
+const glob = require('glob')
 
 l.info('~~ Demo begins ~~');
 (async () => {
-    
-    const filepaths = await glob.readdirPromise('_input/*.txt')
-    
-    const requests = filepaths.map(filepath => {
+    const filepaths = await getFiles('_input/???????*/*.txt')
+    const inputs = filepaths.map(filepath => ({filepath, commit: path.basename(path.dirname(filepath))}))
+
+    const requests = inputs.map(({filepath, commit}) => {
         l.info(filepath)
         
         request.post(`localhost:80/android/${commit}`)
@@ -30,3 +27,9 @@ l.info('~~ Demo begins ~~');
 
     await Promise.all(requests)
 })();
+
+function getFiles(pattern) {
+    return new Promise((resolve, reject) => {
+        glob(pattern, (err, result) => err ? reject(err) : resolve(result))
+    })
+}
