@@ -167,10 +167,3 @@ fabric.properties
 .history
 
 # End of https://www.gitignore.io/api/node,rider,visualstudiocode
-
-IdleGame/
-*.zip
-cache/symbols/
-output/
-_output/
-_input/

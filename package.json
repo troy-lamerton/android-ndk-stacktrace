@@ -15,9 +15,10 @@
     "unzipper": "^0.10.0"
   },
   "scripts": {
-    "start": "node ./source/ndk_runner",
+    "start": "node ./server/source/ndk_runner",
     "demo": "node ./demo",
-    "server": "nodemon ./source/server"
+    "server": "nodemon ./server/source/server",
+    "build": "node ./build"
   },
   "engines": {
     "node": ">=8.0"

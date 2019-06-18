@@ -26,6 +26,8 @@ module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
     
     const parser = require('./parser')
     const traces = parser(logs)
+
+    if (traces.length > 20) throw new Error(`too long! ${traces.length} lines are apparently crash logs`)
     
     const originalStrings = traces.map(obj => obj.original)
 

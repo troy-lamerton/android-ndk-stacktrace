@@ -1,0 +1,6 @@
+IdleGame/
+*.zip
+cache/symbols/
+_output/*.txt
+_output/*/
+_input/*/
