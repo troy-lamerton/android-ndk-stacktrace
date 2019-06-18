@@ -6,7 +6,7 @@ const _ = require('lodash')
 const l = require('./l')
 const ndks = {
     // ARM64: path.join(__dirname, 'bin/aarch64-linux-android-addr2line.exe')
-    'ARM64': path.join(process.env.NDK_PATH, `toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe`),
+    'ARM64': path.join(process.env.ANDROID_NDK_HOME, `toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe`),
 }
 
 function getNdk(arch) {

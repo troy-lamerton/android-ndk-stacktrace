@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Symbolicator for Android</title>
+</head>
+<body>
+
+    <header>
+        <h2>Symbolicator for Android</h2>
+        <p>Turns those <code>000002384</code> numbers into method names</p>
+        <p>Only works with ARM64 test and debug builds (others not implemented)</p>
+    </header>
+    <main style="margin: 3em;">
+        <div>
+            <input id="commit" type="text" placeholder="commit" size="8" maxlength="8"/>
+            <input id="symbols" type="text" size="70" placeholder="Path to libil2cpp.sym" />
+            <br>
+            <br>
+            <textarea id="backtrace" placeholder="native crash logs" maxlength="3000"></textarea>
+        </div>
+        <br>
+        <button id="submit" style="display: block;">Symbolicate</button>
+        <br>
+        <div>
+            <textarea id="output" placeholder="output" readonly></textarea>
+        </div>
+    </main>
+
+    <script>
+        const commit = document.getElementById('commit')
+        const symbols = document.getElementById('symbols')
+        const backtrace = document.getElementById('backtrace')
+        
+        const submit = document.getElementById('submit')
+        const output = document.getElementById('output')
+
+        submit.addEventListener('click', () => {
+            const checks = {
+                'Enter commit': !commit.value,
+                'Enter path to symbols file': !symbols.value,
+                'Enter the native crash logs': !backtrace.value,
+            }
+            let errorMsg = ''
+            for (const key in checks) {
+                console.log(key, checks[key])
+                if (checks[key]) errorMsg += key + '\n'
+            }
+            if (errorMsg) {
+                alert(errorMsg)
+                return;
+            }
+
+            submit.disabled = true;
+
+            const headers = new Headers({
+                'Content-Type': 'text/plain',
+            });
+            const req = new Request(
+                `/android/${commit.value}?symbols=${encodeURIComponent(symbols.value)}`,
+                {
+                    headers,
+                    method: 'POST',
+                    body: backtrace.value
+                }
+            )
+
+            fetch(req).then(res => res.text()).then(bodyContent => {
+                submit.disabled = false;
+                output.value = bodyContent;
+            }).catch(err => {
+                submit.disabled = false;
+                output.value = err;
+            })
+        })
+    </script>
+</body>
+</html>
