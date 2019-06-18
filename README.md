@@ -2,14 +2,19 @@
 
 Better crash logs by decoding unity crashes.
 
-## Setup
+## Make sure you have installed
 
-```
-git clone https://github.com/troy-lamerton/android-ndk-stacktrace.git
-```
+- Github Desktop: https://desktop.github.com/
+- Android NDK: https://developer.android.com/ndk/downloads
 
-Edit ndk path in `android-ndk-stacktrace/server/.env`
+### 1. Open in Github Desktop
 
-1. Open start_server.bat
+![](http://i63.tinypic.com/11ahell.png)
 
-2. Decoder will open at http://localhost:8123 in your default browser
+### 2. Open `android-ndk-stacktrace/server/.env`
+
+Change `ANDROID_NDK_HOME` to where you have the Android NDK.
+
+### 3. Open start_decoder.bat
+
+### 4. Wait for the decoder to open at http://localhost:8123

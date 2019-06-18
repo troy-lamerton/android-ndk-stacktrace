@@ -1,4 +1,5 @@
 require('dotenv').config()
+
 const sh = require('shelljs')
 
 const l = require('./l')
@@ -11,6 +12,16 @@ const staticPlugin = require('fastify-static');
 const symbols = require('./symbols_cache/cache')
 const ndkRunner = require('./ndk_runner')
 
+const hasNdk = fs.existsSync(process.env.ANDROID_NDK_HOME)
+if (!hasNdk) {
+    l.error(`Please set ANDROID_NDK_HOME in ${path.join(__dirname, '.env')}.\nYou don't have anything at ${ANDROID_NDK_HOME}.`)
+    setTimeout(() => {
+        process.exit(1)
+    }, 5000);
+}
+
+(function() {
+    
 server.register(staticPlugin, {
     root: path.join(__dirname, 'public')
 })
@@ -47,8 +58,9 @@ server.post('/android/:commit', async function (req, reply) {
     reply.type('text/plain')
         .send(symolicatedLogs)
 });
+
 const port = process.env.PORT || 80
 sh.exec(`start "" "http://localhost:${port}"`, {windowsHide: false, async: false, silent: true})
-
 server.listen({port})
 
+})();
