@@ -22,12 +22,9 @@ server.post('/android/:commit', async function (req, reply) {
     if (!_.isString(commit) || _.size(commit) < 8) {
         return reply.code(400).send('Commit hash must be 8 characters');
     }
-    
-    if (!_.isString(symbols) || !_.endsWith(symbols, 'libil2cpp.sym')) {
-        return reply.code(400).send('Bad path to symbols file');
-    }
-    if (!fs.existsSync(symbols)) {
-        return reply.code(400).send('Symbols file does not exist at: ' + symbols);
+    const symbolsFile = path.join(symbols, 'libil2cpp.sym');
+    if (!fs.existsSync(symbolsFile)) {
+        return reply.code(400).send('Symbols file does not exist at: ' + symbolsFile);
     }
     
 
@@ -42,7 +39,7 @@ server.post('/android/:commit', async function (req, reply) {
 
     const logs = req.body.toString()
     // const symbolsFolder = symbols.get(commit, arch);
-    const symbolsFolder = path.dirname(symbols);
+    const symbolsFolder = symbols;
 
     const symolicatedLogs = await ndkRunner(logs, symbolsFolder, arch)
 

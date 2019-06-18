@@ -11,21 +11,38 @@
     <header>
         <h2>Symbolicator for Android</h2>
         <p>Turns those <code>000002384</code> numbers into method names</p>
-        <p>Only works with ARM64 test and debug builds (others not implemented)</p>
+        <p>Only works with <strong>ARM64 test and debug builds</strong> (others not implemented)</p>
     </header>
-    <main style="margin: 3em;">
+    <main style="margin: 3em; max-width: 80%; height: 100%; width: 50em;">
         <div>
-            <input id="commit" type="text" placeholder="commit" size="8" maxlength="8"/>
-            <input id="symbols" type="text" size="70" placeholder="Path to libil2cpp.sym" />
+            <label for="Commit">Short commit hash</label>
+            <br>
+            <input id="commit" type="text" placeholder="abc12345" size="8" maxlength="8"/>
             <br>
             <br>
-            <textarea id="backtrace" placeholder="native crash logs" maxlength="3000"></textarea>
+            <label for="symbols">Symbols folder extracted from gitlab artifacts.zip > symbols.zip (Folder must contain libil2cpp.sym)</label>
+            <input id="symbols" type="text" size="70" placeholder="C:\example\abc123_downloaded_artifacts\arm64-v8a" />
+            <br>
+            <br>
+            <label for="backtrace">Native crash logs</label>
+            <br>
+            <textarea id="backtrace" maxlength="3000" style="width: 100%; height: 15em;" placeholder="E/CRASH: backtrace:
+            #00  pc 0000...
+            #01  pc 0000...
+            ...
+
+E/CRASH: some other log" ></textarea>
         </div>
         <br>
-        <button id="submit" style="display: block;">Symbolicate</button>
+        <div>
+            <button id="submit">Symbolicate</button>
+            <strong hidden id="loading" style="color: rgb(64, 0, 212);"> Processing...</strong>
+        </div>
         <br>
         <div>
-            <textarea id="output" placeholder="output" readonly></textarea>
+            <textarea id="output" style="width: 100%; height: 15em;" readonly placeholder="output"></textarea>
+            <br>
+            <a id="save_output" style="background: rgb(212, 209, 255); padding: 0.2em 0.4em; font-family: sans-serif;" disabled>Save output</a>
         </div>
     </main>
 
@@ -35,7 +52,9 @@
         const backtrace = document.getElementById('backtrace')
         
         const submit = document.getElementById('submit')
+        const loading = document.getElementById('loading')
         const output = document.getElementById('output')
+        const saveOutput = document.getElementById('save_output')
 
         submit.addEventListener('click', () => {
             const checks = {
@@ -54,7 +73,8 @@
             }
 
             submit.disabled = true;
-
+            loading.hidden = false;
+            
             const headers = new Headers({
                 'Content-Type': 'text/plain',
             });
@@ -65,15 +85,25 @@
                     method: 'POST',
                     body: backtrace.value
                 }
-            )
+                )
+                
+                fetch(req).then(res => res.text()).then(bodyContent => {
+                    submit.disabled = false;
+                    loading.hidden = true;
+                    output.value = bodyContent;
 
-            fetch(req).then(res => res.text()).then(bodyContent => {
-                submit.disabled = false;
-                output.value = bodyContent;
-            }).catch(err => {
-                submit.disabled = false;
-                output.value = err;
-            })
+                    const text = output.value;
+                    saveOutput.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                    saveOutput.setAttribute('download', `[symbolicated] ${commit.value}.txt`);
+                    saveOutput.disabled = false;
+                }).catch(err => {
+                    submit.disabled = true;
+                    loading.hidden = true;
+                    saveOutput.disabled = false;
+                    saveOutput.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                    saveOutput.setAttribute('download', `[symbolicated] ${commit.value}.txt`);
+                    output.value = err;
+                })
         })
     </script>
 </body>
