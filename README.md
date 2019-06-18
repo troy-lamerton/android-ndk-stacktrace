@@ -12,6 +12,7 @@ edit ndk path in `android-ndk-stacktrace/server/.env`
 
 ```
 cd android-ndk-stacktrace/server
+yarn install
 yarn server
 ```
 
