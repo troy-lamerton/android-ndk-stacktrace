@@ -1,6 +1,6 @@
-# android-ndk-stacktrace
+# Crash Decoder
 
-Better native crash logs by symbolicating unity crashes
+Better crash logs by decoding unity crashes.
 
 ## Setup
 
@@ -8,12 +8,8 @@ Better native crash logs by symbolicating unity crashes
 git clone https://github.com/troy-lamerton/android-ndk-stacktrace.git
 ```
 
-edit ndk path in `android-ndk-stacktrace/server/.env`
+Edit ndk path in `android-ndk-stacktrace/server/.env`
 
-```
-cd android-ndk-stacktrace/server
-yarn install
-yarn server
-```
+1. Open start_server.bat
 
-open http://localhost:8123 in browser
+2. Decoder will open at http://localhost:8123 in your default browser

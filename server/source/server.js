@@ -1,4 +1,5 @@
 require('dotenv').config()
+const sh = require('shelljs')
 
 const l = require('./l')
 const _ = require('lodash')
@@ -46,5 +47,8 @@ server.post('/android/:commit', async function (req, reply) {
     reply.type('text/plain')
         .send(symolicatedLogs)
 });
+const port = process.env.PORT || 80
+sh.exec(`start "" "http://localhost:${port}"`, {windowsHide: false, async: false, silent: true})
 
-server.listen({port: process.env.PORT || 80})
+server.listen({port})
+
