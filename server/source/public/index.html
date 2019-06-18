@@ -6,14 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Symbolicator for Android</title>
 </head>
-<body>
+<body style="background: rgb(236, 236, 236);">
 
     <header>
         <h2>Symbolicator for Android</h2>
         <p>Turns those <code>000002384</code> numbers into method names</p>
         <p>Only works with <strong>ARM64 test and debug builds</strong> (others not implemented)</p>
+        <div>
+            <p>Assumes that you have unity installed and these files:</p>
+            <ul>
+                <li>C:/Program Files/Unity/Hub/Editor/2019.1.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/Variations/il2cpp/Release/Symbols/arm64-v8a/libunity.sym.so</li>
+                <li>C:/Program Files/Unity/Hub/Editor/2019.1.2f1/Editor/Data/PlaybackEngines/AndroidPlayer/Variations/il2cpp/Release/Symbols/arm64-v8a/libmain.sym.so</li>
+            </ul>
+        </div>
     </header>
-    <main style="margin: 3em; max-width: 80%; height: 100%; width: 50em;">
+    <main style="background: rgb(232, 241, 255); padding: 3em; max-width: 80%; height: 100%; width: 50em;">
         <div>
             <label for="Commit">Short commit hash</label>
             <br>
@@ -35,7 +42,9 @@ E/CRASH: some other log" ></textarea>
         </div>
         <br>
         <div>
-            <button id="submit">Symbolicate</button>
+            <button id="submit">
+                <strong>Symbolicate</strong>
+            </button>
             <strong hidden id="loading" style="color: rgb(64, 0, 212);"> Processing...</strong>
         </div>
         <br>
