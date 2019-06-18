@@ -1,20 +1,21 @@
 const sh = require('shelljs')
-const fs = require('fs')
 const path = require('path')
 const _ = require('lodash')
 
 const l = require('./l')
-const ndks = {
+const windowsNdks = {
     // ARM64: path.join(__dirname, 'bin/aarch64-linux-android-addr2line.exe')
     'ARM64': path.join(process.env.ANDROID_NDK_HOME, `toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe`),
 }
 
 function getNdk(arch) {
-    return ndks[arch];
+    return windowsNdks[arch];
 }
 
+const parser = require('./parser');
+
 module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
-    const ndk = getNdk(arch);
+    const windowsNdk = getNdk(arch);
     const defaultSymbols = require(`../config/${arch}`)
 
     const specialSymbolsPath = path.join(specialSymbolsFolder, 'libil2cpp.sym')
@@ -22,9 +23,7 @@ module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
     l.debug('Using game symbols: ' + specialSymbolsPath)
 
     if (logs.length < 5) throw new Error('The logs data doesnt even contain logs!');
-
     
-    const parser = require('./parser')
     const traces = parser(logs)
 
     if (traces.length > 20) throw new Error(`too long! ${traces.length} lines are apparently crash logs`)
@@ -37,7 +36,7 @@ module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
             l.trace(`Checking for symbols in ${path.basename(symbolsFile)}`)
             const { number } = traceObj;
 
-            return executeAsync(`${ndk} -f -C -e "${symbolsFile}" ${number}`)
+            return executeAsync(`${windowsNdk} -f -C -e "${symbolsFile}" ${number}`)
                 .then((niceOutput) => {
                     if (!niceOutput) throw new Error('output is empty!')
                     
@@ -46,9 +45,6 @@ module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
                     
                     // remove the unknown line number indicator
                     return niceOutput.replace('\n??:?', '\n');
-                }).catch(err => {
-                    l.error(`[${ndk}] ${err}`)
-                    return null;
                 })
         })
 
@@ -71,8 +67,8 @@ function executeAsync(command) {
     return new Promise((resolve, reject) => {
         // l.info(command)
         // resolve('??:?')
-        sh.exec(command, {silent: true}, (exitcode, stdout, stderr) => {
-            if (exitcode) reject(`exited with code ${exitcode}\n${stderr.trim()}`)
+        const p = sh.exec(command, {silent: true}, (exitcode, stdout, stderr) => {
+            if (exitcode) reject(`${command} exited with code ${exitcode}\n${stderr.trim()}`)
             else resolve(stdout.trim())
         })
     })
