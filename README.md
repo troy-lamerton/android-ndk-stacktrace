@@ -9,7 +9,7 @@ Better crash logs by decoding unity crashes.
 
 ### 1. Open in Github Desktop
 
-![](http://i63.tinypic.com/11ahell.png)
+![](http://i63.tinypic.com/105r3sx.png)
 
 ### 2. Open `android-ndk-stacktrace/server/.env`
 
