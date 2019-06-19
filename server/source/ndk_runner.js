@@ -3,6 +3,7 @@ const path = require('path')
 const _ = require('lodash')
 
 const l = require('./l')
+const parser = require('./parser');
 const windowsNdks = {
     // ARM64: path.join(__dirname, 'bin/aarch64-linux-android-addr2line.exe')
     'ARM64': path.join(process.env.ANDROID_NDK_HOME, `toolchains/aarch64-linux-android-4.9/prebuilt/windows-x86_64/bin/aarch64-linux-android-addr2line.exe`),
@@ -11,8 +12,6 @@ const windowsNdks = {
 function getNdk(arch) {
     return windowsNdks[arch];
 }
-
-const parser = require('./parser');
 
 module.exports = async (logs, specialSymbolsFolder, arch = 'ARM64') => {
     const windowsNdk = getNdk(arch);

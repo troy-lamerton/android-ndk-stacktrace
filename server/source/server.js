@@ -1,24 +1,15 @@
 require('dotenv').config()
-
+const path = require('path')
+const _ = require('lodash')
+const fs = require('fs')
+const staticPlugin = require('fastify-static');
 const sh = require('shelljs')
 
-const l = require('./l')
-const _ = require('lodash')
-const path = require('path')
-const fs = require('fs')
-const server = require('fastify')({logger: l})
-const staticPlugin = require('fastify-static');
+const l = require('./l');
+const server = require('fastify')({logger: l});
 
-const symbols = require('./symbols_cache/cache')
-const ndkRunner = require('./ndk_runner')
-
-const hasNdk = fs.existsSync(process.env.ANDROID_NDK_HOME)
-if (!hasNdk) {
-    l.error(`Please set ANDROID_NDK_HOME in ${path.join(__dirname, '.env')}.\nYou don't have anything at ${ANDROID_NDK_HOME}.`)
-    setTimeout(() => {
-        process.exit(1)
-    }, 5000);
-}
+const symbols = require('./symbols_cache/cache');
+const ndkRunner = require('./ndk_runner2');
 
 (function() {
     
@@ -26,19 +17,28 @@ server.register(staticPlugin, {
     root: path.join(__dirname, 'public')
 })
 
+const supportedArchs = [
+    'arm64-v8a'
+]
+
+const shaRegex = /[a-f0-9]{8,64}/i
+
 server.post('/android/:commit', async function (req, reply) {
     const commit = _.get(req, 'params.commit')
     const symbols = _.get(req, 'query.symbols')
-    const arch = 'ARM64'
+    const arch = 'arm64-v8a'
 
-    if (!_.isString(commit) || _.size(commit) < 8) {
-        return reply.code(400).send('Commit hash must be 8 characters');
+    if (!supportedArchs.includes(arch)) {
+        return reply.code(400).send('unsupported architecture ' + arch);
+    }
+
+    if (!_.isString(commit) || _.size(commit) < 8 || !shaRegex.test(commit)) {
+        return reply.code(400).send('Commit hash must be 8+ [a-f0-9] characters');
     }
     const symbolsFile = path.join(symbols, 'libil2cpp.sym');
     if (!fs.existsSync(symbolsFile)) {
         return reply.code(400).send('Symbols file does not exist at: ' + symbolsFile);
     }
-    
 
     // if (!symbols.has(commit, arch)) {
     //     l.info('symbols will be downloaded')
@@ -60,7 +60,9 @@ server.post('/android/:commit', async function (req, reply) {
 });
 
 const port = process.env.PORT || 80
-sh.exec(`start "" "http://localhost:${port}"`, {windowsHide: false, async: false, silent: true})
+if (process.argv[2] !== 'development') {
+    sh.exec(`start "" "http://localhost:${port}"`, {windowsHide: false, async: false, silent: true})
+}
 server.listen({port})
 
 })();

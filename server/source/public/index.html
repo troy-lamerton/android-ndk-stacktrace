@@ -99,7 +99,7 @@ E/CRASH: some other log" ></textarea>
                     saveOutput.setAttribute('download', `[symbolicated] ${commit.value}.txt`);
                     saveOutput.disabled = false;
                 }).catch(err => {
-                    submit.disabled = true;
+                    submit.disabled = false;
                     loading.hidden = true;
                     saveOutput.disabled = false;
                     saveOutput.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));

@@ -1,9 +1,3 @@
-2019-06-15 00:13:53.346 15804-15827/? A/OpenGLRenderer: Encountered EGL error 12291 EGL_BAD_ALLOC during rendering
-2019-06-15 00:13:53.347 4384-4384/? I/Layer: id=8992 onRemoved SurfaceView - com.gamingforgood.clashofstreamers/com.gamingforgood.slotmachine.UnityPlayerActivityExtended@a01776e@0[15804]#0 
-2019-06-15 00:13:53.347 4384-4384/? I/Layer: id=8993 onRemoved Background for -SurfaceView - com.gamingforgood.clashofstreamers/com.gamingforgood.slotmachine.UnityPlayerActivityExtended@a01776e@0[15804]#0 
-2019-06-15 00:13:53.366 4354-4354/? D/audio_hw_primary: primary_out-out_update_source_metadata: called, but not implemented yet
-2019-06-15 00:13:53.367 4354-4354/? D/audio_hw_primary: primary_out-out_update_source_metadata: This stream has 1 tracks
-2019-06-15 00:13:53.367 4354-4354/? D/audio_hw_primary: 1 Track has Usage(1), Content Type(2), Gain(0.000000)
 2019-06-15 00:13:53.381 15804-15827/? E/CRASH: signal 6 (SIGABRT), code -6 (?), fault addr --------
 2019-06-15 00:13:53.381 15804-15827/? E/CRASH: *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 2019-06-15 00:13:53.381 15804-15827/? E/CRASH: Build type 'Release', Scripting Backend 'il2cpp', CPU 'arm64-v8a'
@@ -36,31 +30,4 @@
 2019-06-15 00:13:53.407 15804-15849/? E/AndroidRuntime: FATAL EXCEPTION: UnityMain
     Process: com.gamingforgood.clashofstreamers, PID: 15804
     java.lang.Error: signal 6 (SIGABRT), code -6 (?), fault addr --------
-    Build fingerprint: 'samsung/crownltexx/crownlte:9/PPR1.180610.011/N960FXXS2CSDJ:user/release-keys'
-    Revision: '28'
-    pid: 15804, tid: 15827, name: RenderThread  >>> com.gamingforgood.clashofstreamers <<<
-        x0   0000000000000000  x1   0000000000003dd3  x2   0000000000000006  x3   0000000000000008
-        x4   3100000000000000  x5   3100000000000000  x6   3100000000000000  x7   0000000000008031
-        x8   0000000000000083  x9   00000071af77c890  x10  fffffff87ffffbdf  x11  0000000000000001
-        x12  0000007116c03c30  x13  0000000000000004  x14  ffffffffffffffff  x15  3100000000000000
-        x16  00000071af7b32b0  x17  00000071af6f2958  x18  0000007116c0341a  x19  0000000000003dbc
-        x20  0000000000003dd3  x21  0000000000000083  x22  0000007116c04588  x23  00000070d9e6d868
-        x24  0000000000000001  x25  0000000000000001  x26  0000000000000001  x27  0000007116c04588
-        x28  0000000000000000  x29  0000007116c03b50  x30  00000071af6e5da0
-        sp   0000007116c03b10  pc   00000071af6e5dcc  pstate 0000000060000000
-    
-        at [vdso].(:0)
-        at libc.abort(abort:120)
-        at liblog.__android_log_assert(__android_log_assert:296)
-        at libhwui.(:0)
-        at libhwui.(:0)
-        at libhwui.(:0)
-        at libhwui.(:0)
-        at libhwui.(:0)
-        at libhwui.(:0)
-        at libutils._ZN7android6Thread11_threadLoopEPv(_ZN7android6Thread11_threadLoopEPv:280)
-        at libc._ZL15__pthread_startPv(_ZL15__pthread_startPv:208)
-        at libc.__start_thread(__start_thread:68)
-2019-06-15 00:13:53.409 32282-32282/? I/Finsky: [2] mjp.a(5): Applying library update: account=[1U_cDiBi-VJqTLvJTxQVdg4xHBE]
-2019-06-15 00:13:53.410 32282-32282/? I/Finsky: [2] foj.a(15): App library has changed, requesting content sync.
-2019-06-15 00:13:53.411 15804-16056/? I/UnityIAP: invoking callback
+    Build fingerprint: 'sams
